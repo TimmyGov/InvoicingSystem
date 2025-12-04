@@ -1,0 +1,63 @@
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col">
+      <h1>Invoice Management System</h1>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <h2>Invoices</h2>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && invoices.length === 0" class="alert alert-info" role="alert">
+    No invoices found. Create your first invoice to get started.
+  </div>
+
+  <div *ngIf="!loading && !error && invoices.length > 0" class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Invoice Number</th>
+          <th>Customer</th>
+          <th>Issue Date</th>
+          <th>Due Date</th>
+          <th>Total Amount</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let invoice of invoices">
+          <td>{{ invoice.invoiceNumber }}</td>
+          <td>
+            <div>{{ invoice.customer.name }}</div>
+            <small class="text-muted">{{ invoice.customer.email }}</small>
+          </td>
+          <td>{{ formatDate(invoice.issueDate) }}</td>
+          <td>{{ formatDate(invoice.dueDate) }}</td>
+          <td>{{ formatCurrency(invoice.totalAmount) }}</td>
+          <td>
+            <span [className]="getStatusClass(invoice.status)">
+              {{ getStatusText(invoice.status) }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary" type="button">View Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
