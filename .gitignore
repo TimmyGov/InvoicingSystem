@@ -38,6 +38,11 @@ artifacts/
 /client/.angular/
 /client/npm-debug.log*
 /client/yarn-error.log
+/src/InvoiceSystem.Web/node_modules/
+/src/InvoiceSystem.Web/dist/
+/src/InvoiceSystem.Web/.angular/
+/src/InvoiceSystem.Web/npm-debug.log*
+/src/InvoiceSystem.Web/yarn-error.log
 
 # Environment files
 .env
