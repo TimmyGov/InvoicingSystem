@@ -1,0 +1,8 @@
+/* Invoice list specific styles */
+.table-responsive {
+  margin-top: 20px;
+}
+
+.badge {
+  padding: 0.5em 0.75em;
+}
