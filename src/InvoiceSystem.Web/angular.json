@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "invoice-system-web": {
+    "invoicing-system-web": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/invoice-system-web",
+            "outputPath": "dist/invoicing-system-web",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -59,10 +59,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "invoice-system-web:build:production"
+              "buildTarget": "invoicing-system-web:build:production"
             },
             "development": {
-              "buildTarget": "invoice-system-web:build:development"
+              "buildTarget": "invoicing-system-web:build:development"
             }
           },
           "defaultConfiguration": "development"
