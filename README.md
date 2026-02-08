@@ -294,32 +294,3 @@ The following environment variables can be configured in `.env` or `docker-compo
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-### Code Style
-- Follow C# coding conventions for backend code
-- Follow Angular style guide for frontend code
-- Write unit tests for new features
-- Update documentation as needed
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For issues, questions, or contributions, please open an issue on GitHub.
-
-## Roadmap
-
-- [ ] User authentication with JWT
-- [ ] Email notifications for overdue invoices
-- [ ] PDF generation for invoices
-- [ ] Payment tracking and integration
-- [ ] Multi-currency support
-- [ ] Invoice templates
-- [ ] Reporting and analytics dashboard
-- [ ] Multi-tenant support
-
----
-
-Built with ❤️ using Clean Architecture principles
