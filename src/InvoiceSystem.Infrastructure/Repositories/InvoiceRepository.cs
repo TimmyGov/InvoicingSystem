@@ -44,4 +44,16 @@ public class InvoiceRepository : Repository<Invoice>, IInvoiceRepository
             .Include(i => i.Notifications)
             .FirstOrDefaultAsync(i => i.Id == id);
     }
+
+    public async Task UpdateInvoiceStatusAsync(Guid invoiceId, InvoiceStatus status)
+    {
+        var invoice = await _dbSet.FindAsync(invoiceId);
+        if (invoice != null)
+        {
+            invoice.Status = status;
+            invoice.UpdatedAt = DateTime.UtcNow;
+            _context.Entry(invoice).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+    }
 }

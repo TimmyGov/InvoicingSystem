@@ -27,31 +27,49 @@ public class InvoiceService : IInvoiceService
 
     public async Task<InvoiceResponseDto> CreateInvoiceAsync(Guid userId, CreateInvoiceDto dto)
     {
-        // Verify customer exists and belongs to user
-        var customer = await _customerRepository.GetByIdAsync(dto.CustomerId);
-        if (customer == null || customer.UserId != userId)
+        // Create or find customer
+        var customer = new Customer
         {
-            throw new InvalidOperationException("Customer not found or does not belong to user");
-        }
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Name = dto.Customer.Name,
+            Email = dto.Customer.Email,
+            Phone = dto.Customer.Phone,
+            Address = dto.Customer.Address,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        // Save customer
+        await _customerRepository.AddAsync(customer);
 
         // Create invoice entity
-        var invoice = _mapper.Map<Invoice>(dto);
-        invoice.Id = Guid.NewGuid();
-        invoice.UserId = userId;
-        invoice.InvoiceNumber = GenerateInvoiceNumber();
-        invoice.Status = InvoiceStatus.Draft;
-        invoice.CreatedAt = DateTime.UtcNow;
+        var invoice = new Invoice
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            CustomerId = customer.Id,
+            InvoiceNumber = GenerateInvoiceNumber(),
+            IssueDate = DateTime.SpecifyKind(dto.IssueDate, DateTimeKind.Utc),
+            DueDate = DateTime.SpecifyKind(dto.DueDate, DateTimeKind.Utc),
+            Status = InvoiceStatus.Draft,
+            CreatedAt = DateTime.UtcNow,
+            Items = dto.Items.Select(itemDto => new InvoiceItem
+            {
+                Id = Guid.NewGuid(),
+                Description = itemDto.Description,
+                Quantity = itemDto.Quantity,
+                UnitPrice = itemDto.UnitPrice,
+                Amount = itemDto.Quantity * itemDto.UnitPrice
+            }).ToList()
+        };
 
-        // Calculate total amount
-        invoice.TotalAmount = invoice.Items.Sum(item => item.Quantity * item.UnitPrice);
-
-        // Set IDs for items
+        // Set invoice ID for items and calculate total amount
         foreach (var item in invoice.Items)
         {
-            item.Id = Guid.NewGuid();
             item.InvoiceId = invoice.Id;
-            item.Amount = item.Quantity * item.UnitPrice;
         }
+
+        invoice.TotalAmount = invoice.Items.Sum(item => item.Amount);
 
         // Save invoice
         await _invoiceRepository.AddAsync(invoice);
@@ -64,12 +82,24 @@ public class InvoiceService : IInvoiceService
     public async Task<InvoiceResponseDto?> GetInvoiceByIdAsync(Guid id)
     {
         var invoice = await _invoiceRepository.GetByIdAsync(id);
-        return invoice == null ? null : _mapper.Map<InvoiceResponseDto>(invoice);
+        if (invoice == null) return null;
+        
+        // Update status if needed
+        await UpdateInvoiceStatusIfNeeded(invoice);
+        
+        return _mapper.Map<InvoiceResponseDto>(invoice);
     }
 
     public async Task<IEnumerable<InvoiceResponseDto>> GetUserInvoicesAsync(Guid userId)
     {
         var invoices = await _invoiceRepository.GetByUserIdAsync(userId);
+        
+        // Update status for all invoices if needed
+        foreach (var invoice in invoices)
+        {
+            await UpdateInvoiceStatusIfNeeded(invoice);
+        }
+        
         return _mapper.Map<IEnumerable<InvoiceResponseDto>>(invoices);
     }
 
@@ -107,6 +137,41 @@ public class InvoiceService : IInvoiceService
                 }
             }
         }
+    }
+
+    private async Task UpdateInvoiceStatusIfNeeded(Invoice invoice)
+    {
+        var currentStatus = CalculateCurrentStatus(invoice);
+        
+        if (currentStatus != invoice.Status)
+        {
+            // Use the specialized status update method for better tracking
+            await _invoiceRepository.UpdateInvoiceStatusAsync(invoice.Id, currentStatus);
+            // Also update the in-memory object so the returned data is correct
+            invoice.Status = currentStatus;
+            invoice.UpdatedAt = DateTime.UtcNow;
+        }
+    }
+
+    private InvoiceStatus CalculateCurrentStatus(Invoice invoice)
+    {
+        // Don't change Paid or Cancelled status
+        if (invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Cancelled)
+        {
+            return invoice.Status;
+        }
+
+        // Check if invoice is overdue
+        var today = DateTime.UtcNow.Date;
+        var dueDate = invoice.DueDate.Date;
+        
+        if (dueDate < today)
+        {
+            return InvoiceStatus.Overdue;
+        }
+
+        // Keep current status if not overdue
+        return invoice.Status;
     }
 
     private string GenerateInvoiceNumber()

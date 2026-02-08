@@ -1,0 +1,109 @@
+.invoice-detail {
+  background-color: #fff;
+}
+
+.card {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.card-title {
+  color: #495057;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.875rem;
+  padding: 0.5em 0.75em;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+.table thead th {
+  border-bottom: 2px solid #dee2e6;
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.table-active th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* Print styles */
+@media print {
+  .btn-group,
+  .btn {
+    display: none !important;
+  }
+  
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  .card-header {
+    background-color: transparent !important;
+    color: #000 !important;
+    border-bottom: 2px solid #000 !important;
+  }
+  
+  .invoice-detail {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .container-fluid {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  .table {
+    border-collapse: collapse !important;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #000 !important;
+    padding: 0.5rem !important;
+  }
+  
+  .table thead th {
+    background-color: #f0f0f0 !important;
+    color: #000 !important;
+  }
+  
+  .text-primary {
+    color: #000 !important;
+  }
+  
+  .badge {
+    border: 1px solid #000 !important;
+    color: #000 !important;
+    background-color: transparent !important;
+  }
+  
+  /* Ensure proper page breaks */
+  .card {
+    break-inside: avoid;
+  }
+  
+  h1, h2, h3, h4, h5 {
+    break-after: avoid;
+  }
+}

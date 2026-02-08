@@ -43,7 +43,7 @@ services:
     working_dir: /app
     volumes:
       - ./src/InvoiceSystem.Web:/app
-    command: sh -c "npm install && npm start"
+    command: sh -c "npm install && npx ng serve --host 0.0.0.0 --port 4200"
     ports:
       - "4200:4200"
     networks:

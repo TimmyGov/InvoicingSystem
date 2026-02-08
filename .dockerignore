@@ -1,0 +1,18 @@
+src/InvoiceSystem.Web/node_modules/
+src/InvoiceSystem.Web/dist/
+src/InvoiceSystem.Web/.angular/
+src/InvoiceSystem.Web/tmp/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build outputs
+bin/
+obj/
+out/

@@ -1,0 +1,225 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h2>Create New Invoice</h2>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()" #invoiceForm="ngForm">
+            <!-- Customer Information -->
+            <div class="mb-4">
+              <h5>Customer Information</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="customerName" class="form-label">Customer Name *</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="customerName"
+                      [(ngModel)]="invoice.customer.name"
+                      name="customerName"
+                      required
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="customerEmail" class="form-label">Email *</label>
+                    <input 
+                      type="email" 
+                      class="form-control" 
+                      id="customerEmail"
+                      [(ngModel)]="invoice.customer.email"
+                      name="customerEmail"
+                      required
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="customerPhone" class="form-label">Phone</label>
+                    <input 
+                      type="tel" 
+                      class="form-control" 
+                      id="customerPhone"
+                      [(ngModel)]="invoice.customer.phone"
+                      name="customerPhone"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="customerAddress" class="form-label">Address</label>
+                    <textarea 
+                      class="form-control" 
+                      id="customerAddress"
+                      [(ngModel)]="invoice.customer.address"
+                      name="customerAddress"
+                      rows="2"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Invoice Dates -->
+            <div class="mb-4">
+              <h5>Invoice Details</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="issueDate" class="form-label">Issue Date *</label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="issueDate"
+                      [value]="invoice.issueDate | date:'yyyy-MM-dd'"
+                      (change)="onIssueDateChange($event)"
+                      name="issueDate"
+                      required
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="dueDate" class="form-label">Due Date *</label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      [class.is-invalid]="!isDueDateValid()"
+                      [attr.min]="getTomorrowDate()"
+                      id="dueDate"
+                      [value]="invoice.dueDate | date:'yyyy-MM-dd'"
+                      (change)="onDueDateChange($event)"
+                      name="dueDate"
+                      required
+                    >
+                    <div *ngIf="!isDueDateValid()" class="invalid-feedback">
+                      Due date must be greater than today's date.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Invoice Items -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Invoice Items</h5>
+                <button 
+                  type="button" 
+                  class="btn btn-success btn-sm"
+                  (click)="addItem()"
+                >
+                  <i class="fas fa-plus"></i> Add Item
+                </button>
+              </div>
+
+              <div *ngFor="let item of invoice.items; let i = index" class="card mb-3">
+                <div class="card-body">
+                  <div class="row align-items-end">
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Description *</label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [(ngModel)]="item.description"
+                          [name]="'description_' + i"
+                          required
+                        >
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="mb-3">
+                        <label class="form-label">Quantity *</label>
+                        <input 
+                          type="number" 
+                          class="form-control" 
+                          [(ngModel)]="item.quantity"
+                          [name]="'quantity_' + i"
+                          min="1"
+                          required
+                        >
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="mb-3">
+                        <label class="form-label">Unit Price *</label>
+                        <input 
+                          type="number" 
+                          class="form-control" 
+                          [(ngModel)]="item.unitPrice"
+                          [name]="'unitPrice_' + i"
+                          min="0"
+                          step="0.01"
+                          required
+                        >
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="mb-3">
+                        <label class="form-label">Total</label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [value]="calculateItemTotal(item) | currency:'ZAR':'symbol':'1.2-2':'en-ZA'"
+                          readonly
+                        >
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="mb-3">
+                        <button 
+                          type="button" 
+                          class="btn btn-danger btn-sm"
+                          (click)="removeItem(i)"
+                          [disabled]="invoice.items.length <= 1"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-end">
+                <h4>Total: {{ calculateTotal() | currency:'ZAR':'symbol':'1.2-2':'en-ZA' }}</h4>
+              </div>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="error" class="alert alert-danger" role="alert">
+              {{ error }}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-end gap-2">
+              <button 
+                type="button" 
+                class="btn btn-secondary"
+                (click)="onCancel()"
+                [disabled]="loading"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="loading || !invoiceForm.valid"
+              >
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Create Invoice
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

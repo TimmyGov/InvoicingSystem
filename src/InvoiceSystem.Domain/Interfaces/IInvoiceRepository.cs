@@ -6,4 +6,5 @@ public interface IInvoiceRepository : IRepository<Invoice>
 {
     Task<IEnumerable<Invoice>> GetOverdueInvoicesAsync();
     Task<IEnumerable<Invoice>> GetByUserIdAsync(Guid userId);
+    Task UpdateInvoiceStatusAsync(Guid invoiceId, InvoiceSystem.Domain.Enums.InvoiceStatus status);
 }

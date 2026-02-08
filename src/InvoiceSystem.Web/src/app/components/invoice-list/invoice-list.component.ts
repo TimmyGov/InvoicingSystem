@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Invoice, InvoiceStatus } from '../../models/invoice.model';
 import { InvoiceService } from '../../services/invoice.service';
 
@@ -12,7 +13,10 @@ export class InvoiceListComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private invoiceService: InvoiceService) { }
+  constructor(
+    private invoiceService: InvoiceService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadInvoices();
@@ -61,9 +65,33 @@ export class InvoiceListComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'ZAR'
     }).format(amount);
+  }
+
+  navigateToCreate(): void {
+    this.router.navigate(['/invoices/create']);
+  }
+
+  viewInvoice(id: string): void {
+    this.router.navigate(['/invoices', id]);
+  }
+
+  isOverdue(invoice: Invoice): boolean {
+    const today = new Date();
+    const dueDate = new Date(invoice.dueDate);
+    today.setHours(0, 0, 0, 0);
+    dueDate.setHours(0, 0, 0, 0);
+    return dueDate < today && invoice.status !== InvoiceStatus.Paid && invoice.status !== InvoiceStatus.Cancelled;
+  }
+
+  getRowClass(invoice: Invoice): string {
+    // Check if invoice status is overdue OR if it should be overdue based on date
+    const isOverdueByStatus = invoice.status === InvoiceStatus.Overdue;
+    const isOverdueByDate = this.isOverdue(invoice);
+    
+    return (isOverdueByStatus || isOverdueByDate) ? 'table-danger' : '';
   }
 }

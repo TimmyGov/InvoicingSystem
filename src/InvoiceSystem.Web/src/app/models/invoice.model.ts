@@ -41,8 +41,15 @@ export interface CreateInvoiceItem {
   unitPrice: number;
 }
 
+export interface CreateCustomer {
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+}
+
 export interface CreateInvoiceRequest {
-  customerId: string;
+  customer: CreateCustomer;
   issueDate: Date;
   dueDate: Date;
   items: CreateInvoiceItem[];
