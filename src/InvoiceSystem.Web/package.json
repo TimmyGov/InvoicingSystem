@@ -1,5 +1,5 @@
 {
-  "name": "invoice-system-web",
+  "name": "invoicing-system-web",
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
